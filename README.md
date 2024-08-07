@@ -10,5 +10,10 @@ Curvetopia is a project focused on regularizing hand-drawn curves by identifying
 
 The algorithm can optionally convert line art images into polylines, and it will be tested on various images to ensure its effectiveness in distinguishing and regularizing these shapes.
 
+To run the above tasks in a folder:
+
+1. Run the script `create_dataset.py`.
+3. Then run the script `model_training.py`.
+
 
 
