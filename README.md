@@ -13,7 +13,7 @@ The algorithm can optionally convert line art images into polylines, and it will
 To run the above tasks in a folder:
 
 1. Run the script `create_dataset.py`.
-3. Then run the script `model_training.py`.
+3. Then run the script `model_training.py` for model training and evaluation. Change the path of the image to be predicted.
 
 
 
