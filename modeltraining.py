@@ -104,7 +104,7 @@ def predict_image(image_path, model, transform, device):
     return predicted.item()  # Returns the index of the predicted class
 
 # Example usage
-image_path = "./dataset/valid/Star/star_320.png"
+image_path = "path/to/your/img"
 predicted_class = predict_image(image_path, model, transform, device)
 class_names = train_dataset.classes
 print(f'Predicted class name: {class_names[predicted_class]}')
