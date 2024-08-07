@@ -73,6 +73,8 @@ for epoch in range(num_epochs):
 
 print('Finished Training')
 
+torch.save(model.state_dict(), 'model.pth')
+
 def evaluate_model(model, test_loader, device):
     model.eval()  # Set the model to evaluation mode
     correct = 0
