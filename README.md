@@ -40,6 +40,6 @@ To identify reflection symmetries in various closed shapes, transform the shape 
      
 To run the above task :
 
-1.Run the script `symmetry.py` by inputting the image path.
+1.Run the script `symmetry.py` by inputting the path to your csv file and horizontal/vertical symmetry.
 
 
