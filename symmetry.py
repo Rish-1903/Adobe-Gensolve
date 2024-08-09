@@ -1,15 +1,22 @@
-import cv2
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
-def preprocess_image(image_path):
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    _, binary = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY_INV)
-    return binary
+def read_csv(csv_path):
+    np_path_XYs = np.genfromtxt(csv_path, delimiter=',')
+    path_XYs = []
 
-def detect_contours(binary_image):
-    contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    return contours
+    for i in np.unique(np_path_XYs[:, 0]):
+        npXYs = np_path_XYs[np_path_XYs[:, 0] == i][:, 1:]
+        XYs = []
+
+        for j in np.unique(npXYs[:, 0]):
+            XY = npXYs[npXYs[:, 0] == j][:, 1:]
+            XYs.append(XY)
+
+        path_XYs.append(XYs)
+
+    return path_XYs
 
 def reflect_points(points, axis, center):
     reflected_points = np.copy(points)
@@ -22,33 +29,49 @@ def reflect_points(points, axis, center):
     return reflected_points
 
 def is_symmetric(points, axis):
-
     center = np.mean(points, axis=0)
     reflected_points = reflect_points(points, axis, center)
     return np.allclose(points, reflected_points, atol=1e-2)
 
-def plot_image_with_symmetry(image_path, contours, axis, is_symmetric):
-    img = cv2.imread(image_path)
+def plot_points_with_symmetry(points, axis, is_symmetric):
     plt.figure()
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    for contour in contours:
-        plt.plot(contour[:, 0, 0], contour[:, 0, 1], 'r-')
-    center = np.mean(contours[0], axis=0)
+    plt.scatter(points[:, 0], points[:, 1], c='b', label='Original Points')
+    center = np.mean(points, axis=0)
     if axis == 'vertical':
-        plt.axvline(x=center[0][0], color='g' if is_symmetric else 'b', linestyle='--')
+        plt.axvline(x=center[0], color='g' if is_symmetric else 'r', linestyle='--', label='Symmetry Line')
     elif axis == 'horizontal':
-        plt.axhline(y=center[0][1], color='g' if is_symmetric else 'b', linestyle='--')
+        plt.axhline(y=center[1], color='g' if is_symmetric else 'r', linestyle='--', label='Symmetry Line')
     plt.title('Symmetry Detection')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
     plt.show()
 
-def main(image_path, axis):
-    binary_image = preprocess_image(image_path)
-    contours = detect_contours(binary_image)
-    all_points = np.vstack(contours).squeeze()
+def save_results_to_csv(points, is_symmetric, output_path):
+    df = pd.DataFrame(points, columns=['x', 'y'])
+    df['is_symmetric'] = is_symmetric
+    df.to_csv(output_path, index=False)
+
+def main(csv_path, axis, output_csv_path):
+    path_XYs = read_csv(csv_path)
+    # Flatten the list of arrays and create a DataFrame
+    data_frames = []
+    for path in path_XYs:
+        for segment in path:
+            df = pd.DataFrame(segment, columns=['x', 'y'])
+            data_frames.append(df)
+    final_df = pd.concat(data_frames, ignore_index=True)
+    # Extract x and y coordinates
+    x = final_df['x'].values
+    y = final_df['y'].values
+    all_points = np.column_stack((x, y))
     symmetric = is_symmetric(all_points, axis)
-    plot_image_with_symmetry(image_path, contours, axis, symmetric)
+    plot_points_with_symmetry(all_points, axis, symmetric)
+    save_results_to_csv(all_points, symmetric, output_csv_path)
     print(f'Symmetry along {axis}: {symmetric}')
 
-image_path = '/path/to/image/'
-axis = 'vertical'  # or 'horizontal'
-main(image_path, axis)
+csv_path = str(input("Enter the path to csv "))
+axis = str(input("Enter the line of symmetry horizontal/vertical "))  
+output_csv_path = 'symmetry_results.csv'
+main(csv_path, axis, output_csv_path)
+
