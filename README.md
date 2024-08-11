@@ -42,4 +42,10 @@ To run the above task :
 
 1.Run the script `symmetry.py` by inputting the path to your csv file and horizontal/vertical symmetry.
 
+## Task3 CompletingIncomplete Curves
+
+Run the script  `unmasking.py` by inputting the image path in .png or .jpg format.
+
+
+
 
