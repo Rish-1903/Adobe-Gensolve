@@ -46,6 +46,10 @@ To run the above task :
 
 Run the script  `unmasking.py` by inputting the image path in .png or .jpg format.
 
+## To run app
+
+Run the script `streamlit run app.py` for running the app
+
 
 
 
